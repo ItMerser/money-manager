@@ -1,13 +1,14 @@
 from django.contrib import admin
 from django.db.models import Sum, F
 
-from .models import (
+from core.models  import (
     Account,
     IncomeCategory,
     ExpenseCategory,
     Income,
     Expense,
 )
+from core.mixins import AdminDisplayMixin
 
 
 @admin.register(Account)
@@ -16,12 +17,8 @@ class AccountAdmin(admin.ModelAdmin):
 
 
 @admin.register(IncomeCategory)
-class IncomeCategoryAdmin(admin.ModelAdmin):
+class IncomeCategoryAdmin(AdminDisplayMixin, admin.ModelAdmin):
     list_display = ('name', 'total',)
-
-    @admin.display
-    def total(self, obj):
-        return obj._total
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -30,12 +27,8 @@ class IncomeCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(ExpenseCategory)
-class ExpenseCategoryAdmin(admin.ModelAdmin):
+class ExpenseCategoryAdmin(AdminDisplayMixin, admin.ModelAdmin):
     list_display = ('name', 'total',)
-
-    @admin.display
-    def total(self, obj):
-        return obj._total
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -44,18 +37,10 @@ class ExpenseCategoryAdmin(admin.ModelAdmin):
 
 
 @admin.register(Income)
-class IncomeAdmin(admin.ModelAdmin):
-    list_display = ('category__name', 'count', 'date',)
-
-    @admin.display
-    def category__name(self, obj):
-        return obj.category.name
+class IncomeAdmin(AdminDisplayMixin, admin.ModelAdmin):
+    list_display = ('category__name', 'count', 'added_date',)
 
 
 @admin.register(Expense)
-class ExpenseAdmin(admin.ModelAdmin):
-    list_display = ('category__name', 'count', 'date',)
-
-    @admin.display
-    def category__name(self, obj):
-        return obj.category.name
+class ExpenseAdmin(AdminDisplayMixin, admin.ModelAdmin):
+    list_display = ('category__name', 'count', 'added_date',)
