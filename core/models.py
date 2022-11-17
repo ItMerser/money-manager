@@ -54,7 +54,6 @@ class Income(models.Model):
         account = Account.objects.get(pk=self.account.pk)
         account.balance += self.count
         account.save()
-        print(f'{account.balance=}')
         super().save(*args, **kwargs)
 
 
@@ -78,5 +77,4 @@ class Expense(models.Model):
         account = Account.objects.get(pk=self.account.pk)
         account.balance -= self.count
         account.save()
-        print(f'{account.balance=}')
         super().save(*args, **kwargs)
