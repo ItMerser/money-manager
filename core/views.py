@@ -1,16 +1,16 @@
 from datetime import date
 
 from django.db.models import Sum, F, Q, Model
+from django.db.models.functions import Round
 from django.shortcuts import render
 from django.http.response import JsonResponse
 
-from .models import (
+from core.models import (
     IncomeCategory,
     ExpenseCategory,
     Income,
     Expense,
 )
-
 
 MONTHS = {
     1: 'January',
@@ -40,12 +40,13 @@ def align_months(current_month: int) -> list[int]:
 
 
 def income_by_categories(request):
-    queryset = IncomeCategory.objects.values('name').annotate(total=Sum(F('income__count')))
+    queryset = IncomeCategory.objects.values('name') \
+                                     .annotate(total=Round(Sum(F('income__count')), precision=2))
     return JsonResponse(data=list(queryset), safe=False)
 
 
 def total_by_categories(model: Model, lookup: str) -> JsonResponse:
-    queryset = model.objects.values('name').annotate(total=Sum(F(lookup)))
+    queryset = model.objects.values('name').annotate(total=Round(Sum(F(lookup)), precision=2))
     return JsonResponse(data=list(queryset), safe=False)
 
 
@@ -54,7 +55,7 @@ def total_by_months(model: Model) -> JsonResponse:
     one_year_old = date(current_date.year - 1, current_date.month, current_date.day + 1)
     queryset = model.objects.filter(date__gte=one_year_old)
     aggregations = {
-        MONTHS[month]: Sum('count', filter=Q(date__month=month))
+        MONTHS[month]: Round(Sum('count', filter=Q(date__month=month)), precision=2)
         for month in align_months(current_date.month)
     }
     return JsonResponse(data=queryset.aggregate(**aggregations))
