@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.conf import settings
 
 class AdminDisplayMixin:
     @admin.display
@@ -7,7 +8,12 @@ class AdminDisplayMixin:
 
     @admin.display
     def total(self, obj):
-        return obj._total
+        total = obj._total
+        if total:
+            return total.quantize(settings.ROUND_TO)
+        return total
+
+    total.admin_order_field = '_total'
 
     @admin.display
     def category__name(self, obj):

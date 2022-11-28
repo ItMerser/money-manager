@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.db.models import Sum, F
-from django.db.models.functions import Round
 
 from core.models  import (
     Account,
@@ -23,7 +22,7 @@ class IncomeCategoryAdmin(AdminDisplayMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        queryset = queryset.annotate(_total=Round(Sum(F('income__count')), precision=2))
+        queryset = queryset.annotate(_total=Sum(F('income__count')))
         return queryset
 
 
@@ -33,14 +32,13 @@ class ExpenseCategoryAdmin(AdminDisplayMixin, admin.ModelAdmin):
 
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
-        queryset = queryset.annotate(_total=Round(Sum(F('expense__count')), precision=2))
+        queryset = queryset.annotate(_total=Sum(F('expense__count')))
         return queryset
 
 
 @admin.register(Income)
 class IncomeAdmin(AdminDisplayMixin, admin.ModelAdmin):
     list_display = ('category__name', 'count', 'added_date',)
-
 
 @admin.register(Expense)
 class ExpenseAdmin(AdminDisplayMixin, admin.ModelAdmin):

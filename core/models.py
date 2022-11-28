@@ -5,7 +5,7 @@ from django.utils import timezone
 
 class Account(models.Model):
     name = models.CharField(max_length=100, unique=True)
-    balance = models.FloatField(default=0)
+    balance = models.DecimalField(max_digits=100, decimal_places=2, default=0)
 
     class Meta:
         constraints = [
@@ -36,7 +36,7 @@ class ExpenseCategory(models.Model):
 
 class Income(models.Model):
     category = models.ForeignKey(IncomeCategory, on_delete=models.PROTECT)
-    count = models.FloatField()
+    count = models.DecimalField(max_digits=100, decimal_places=2, default=0)
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     date = models.DateField(blank=True, default=timezone.now)
     comment = models.TextField(blank=True, default='')
@@ -59,7 +59,7 @@ class Income(models.Model):
 
 class Expense(models.Model):
     category = models.ForeignKey(ExpenseCategory, on_delete=models.PROTECT)
-    count = models.FloatField()
+    count = models.DecimalField(max_digits=100, decimal_places=2, default=0)
     date = models.DateField(blank=True, default=timezone.now)
     account = models.ForeignKey(Account, on_delete=models.PROTECT)
     comment = models.TextField(blank=True, default='')
